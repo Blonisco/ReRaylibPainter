@@ -1,0 +1,222 @@
+#include "raylib.h"
+#include "screens.h"
+
+static Mode next_mode = DRAW;
+int draw_mode;
+int draw_board_index = 0;
+struct draw draw_board[10000];
+Color draw_color = BLACK;
+int draw_size    = 50;
+// line
+static _Bool last_mousedown;
+Vector2 draw_start_mouse;
+// poly
+Vector2 draw_poly_points[10];
+int poly_points_number = 0;
+
+void
+init_draw ()
+{
+        next_mode          = DRAW;
+        poly_points_number = 0;
+}
+
+Mode
+return_mode_draw ()
+{
+        return next_mode;
+}
+
+void
+update_mode_draw ()
+{
+        if (IsKeyDown (KEY_C))
+                {
+                        draw_mode = 1; // mode1:circle
+                }
+        if (IsKeyDown (KEY_L))
+                {
+                        draw_mode = 2; // mode 2:line
+                }
+        if (IsKeyDown (KEY_P))
+                {
+                        draw_mode = 3; // mode3:Poly
+                }
+        if (IsKeyPressed (KEY_U))
+                {
+                        if (draw_board_index > 0)
+                                {
+                                        draw_board_index--;
+                                }
+                }
+        if (IsKeyPressed (KEY_UP))
+                {
+                        if (draw_size < 100)
+                                {
+                                        draw_size++;
+                                }
+                }
+        if (IsKeyPressed (KEY_DOWN))
+                {
+                        if (draw_size > 1)
+                                {
+                                        draw_size--;
+                                }
+                }
+
+        if (draw_mode == 1)
+                {
+                        if (IsMouseButtonPressed (MOUSE_BUTTON_LEFT))
+                                {
+                                        draw_board[draw_board_index].draw_board_type = 'c';
+                                        draw_board[draw_board_index].position[0]
+                                            = GetMousePosition ();
+                                        draw_board[draw_board_index].parameter[0]     = draw_size;
+                                        draw_board[draw_board_index].draw_board_color = draw_color;
+                                        draw_board_index++;
+                                }
+                }
+        if (draw_mode == 2)
+                {
+                        if (IsMouseButtonPressed (MOUSE_BUTTON_LEFT))
+                                {
+                                        draw_start_mouse = GetMousePosition ();
+                                }
+
+                        if (IsMouseButtonReleased (MOUSE_BUTTON_LEFT))
+                                {
+                                        if (draw_board_index < 10000)
+                                                {
+                                                        draw_board[draw_board_index].draw_board_type
+                                                            = 'l';
+                                                        draw_board[draw_board_index].position[0]
+                                                            = draw_start_mouse;
+                                                        draw_board[draw_board_index].position[1]
+                                                            = GetMousePosition ();
+                                                        draw_board[draw_board_index]
+                                                            .draw_board_color
+                                                            = draw_color;
+                                                        draw_board_index++;
+                                                }
+                                }
+                }
+        if (draw_mode == 3)
+                {
+                        if (IsMouseButtonReleased (MOUSE_BUTTON_LEFT))
+                                {
+                                        if (poly_points_number < 9)
+                                                {
+                                                        draw_poly_points[poly_points_number]
+                                                            = GetMousePosition ();
+                                                        poly_points_number++;
+                                                }
+                                }
+
+                        if (IsKeyReleased (KEY_ENTER))
+                                {
+                                        if (poly_points_number > 1)
+                                                {
+                                                        for (int i = 0; i <= poly_points_number;
+                                                             i++)
+                                                                {
+                                                                        draw_board[draw_board_index]
+                                                                            .position[i]
+                                                                            = draw_poly_points[i];
+                                                                }
+                                                        draw_board[draw_board_index]
+                                                            .draw_board_color
+                                                            = draw_color;
+                                                        draw_board[draw_board_index].draw_board_type
+                                                            = 'p';
+                                                        draw_board[draw_board_index].parameter[0]
+                                                            = poly_points_number;
+                                                        draw_board_index++;
+                                                        poly_points_number = 0;
+                                                }
+                                }
+                }
+}
+
+void
+draw_draw ()
+{
+        // load from data
+        for (int i = 0; i <= draw_board_index - 1; i++)
+                {
+                        switch (draw_board[i].draw_board_type)
+                                {
+                                        // line
+                                case 'l':
+                                        DrawLine (draw_board[i].position[0].x,
+                                                  draw_board[i].position[0].y,
+                                                  draw_board[i].position[1].x,
+                                                  draw_board[i].position[1].y,
+                                                  draw_board[i].draw_board_color);
+                                        break;
+                                        // circle
+                                case 'c':
+                                        DrawCircle (draw_board[i].position[0].x,
+                                                    draw_board[i].position[0].y,
+                                                    draw_board[i].parameter[0],
+                                                    draw_board[i].draw_board_color);
+                                        break;
+                                case 'p':
+                                        DrawTriangleFan (draw_board[i].position,
+                                                         draw_board[i].parameter[0],
+                                                         draw_board[i].draw_board_color);
+                                        break;
+                                }
+                }
+        // choose Color
+        if (IsKeyPressed (KEY_ONE))
+                {
+                        draw_color = BLACK;
+                }
+        if (IsKeyPressed (KEY_TWO))
+                {
+                        draw_color = BLUE;
+                }
+        if (IsKeyPressed (KEY_THREE))
+                {
+                        draw_color = RED;
+                }
+        if (IsKeyPressed (KEY_FOUR))
+                {
+                        draw_color = YELLOW;
+                }
+        if (IsKeyPressed (KEY_FIVE))
+                {
+                        draw_color = GREEN;
+                }
+        // draw mouse
+        switch (draw_mode)
+                {
+                case 1:
+                        // circle mode
+                        DrawCircle (GetMousePosition ().x, GetMousePosition ().y, draw_size,
+                                    draw_color);
+                        DrawText ("Circle", 30, 1250, 20, font_color);
+
+                        break;
+                // line mode
+                case 2:
+                        DrawText ("Line", 30, 1250, 20, font_color);
+                        if (IsMouseButtonDown (MOUSE_BUTTON_LEFT))
+                                {
+                                        DrawLine (draw_start_mouse.x, draw_start_mouse.y,
+                                                  GetMousePosition ().x, GetMousePosition ().y,
+                                                  draw_color);
+                                }
+                        break;
+
+                case 3:
+                        DrawText ("Poly", 30, 1250, 20, font_color);
+                        for (int i = 0; i < poly_points_number; i++)
+                                {
+                                        DrawCircle (draw_poly_points[i].x, draw_poly_points[i].y,
+                                                    1.0, draw_color);
+                                }
+                        break;
+                }
+        DrawCircle (10, 1260, 10.0, draw_color);
+}
