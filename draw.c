@@ -2,18 +2,18 @@
 #include "screens.h"
 
 static Mode next_mode = DRAW;
-int draw_mode;
-int draw_board_index = 0;
+int draw_mode         = -1;
+int draw_board_index  = 0;
 struct draw draw_board[10000];
 Color draw_color = BLACK;
 int draw_size    = 50;
 // line
-static _Bool last_mousedown;
 Vector2 draw_start_mouse;
 // poly
 Vector2 draw_poly_points[10];
 int poly_points_number = 0;
-
+// Text
+char draw_text = 'T';
 void
 init_draw ()
 {
@@ -30,17 +30,31 @@ return_mode_draw ()
 void
 update_mode_draw ()
 {
-        if (IsKeyDown (KEY_C))
+        if (draw_mode == -1)
                 {
-                        draw_mode = 1; // mode1:circle
+                        if (IsKeyDown (KEY_C))
+                                {
+                                        draw_mode = 1; // mode1:circle
+                                }
+                        if (IsKeyDown (KEY_L))
+                                {
+                                        draw_mode = 2; // mode 2:line
+                                }
+                        if (IsKeyDown (KEY_P))
+                                {
+                                        draw_mode = 3; // mode3:Poly
+                                }
+                        if (IsKeyDown (KEY_T)) // mode4:Text
+                                {
+                                        draw_mode = 4;
+                                }
                 }
-        if (IsKeyDown (KEY_L))
+        else
                 {
-                        draw_mode = 2; // mode 2:line
-                }
-        if (IsKeyDown (KEY_P))
-                {
-                        draw_mode = 3; // mode3:Poly
+                        if (IsKeyDown (KEY_TAB))
+                                {
+                                        draw_mode = -1;
+                                }
                 }
         if (IsKeyPressed (KEY_U))
                 {
@@ -49,21 +63,11 @@ update_mode_draw ()
                                         draw_board_index--;
                                 }
                 }
-        if (IsKeyPressed (KEY_UP))
-                {
-                        if (draw_size < 100)
-                                {
-                                        draw_size++;
-                                }
-                }
-        if (IsKeyPressed (KEY_DOWN))
-                {
-                        if (draw_size > 1)
-                                {
-                                        draw_size--;
-                                }
-                }
-
+        draw_size += (int)GetMouseWheelMove () * 3;
+        if (draw_size > 100)
+                draw_size = 100;
+        if (draw_size < 1)
+                draw_size = 1;
         if (draw_mode == 1)
                 {
                         if (IsMouseButtonPressed (MOUSE_BUTTON_LEFT))
@@ -135,6 +139,25 @@ update_mode_draw ()
                                                 }
                                 }
                 }
+        if (draw_mode == 4)
+                {
+                        if (IsMouseButtonPressed (MOUSE_BUTTON_LEFT))
+                                {
+                                        draw_board[draw_board_index].draw_board_color = draw_color;
+                                        draw_board[draw_board_index].position[0]
+                                            = GetMousePosition ();
+                                        draw_board[draw_board_index].parameter[0]    = draw_text;
+                                        draw_board[draw_board_index].parameter[1]    = draw_size;
+                                        draw_board[draw_board_index].draw_board_type = 't';
+                                        draw_board_index++;
+                                }
+
+                        int draw_text_temp = GetKeyPressed ();
+                        if (draw_text_temp >= 'A' && draw_text_temp <= 'Z')
+                                {
+                                        draw_text = draw_text_temp;
+                                }
+                }
 }
 
 void
@@ -165,6 +188,14 @@ draw_draw ()
                                                          draw_board[i].parameter[0],
                                                          draw_board[i].draw_board_color);
                                         break;
+                                case 't':
+                                        DrawText (TextFormat ("%c", draw_board[i].parameter[0]),
+                                                  draw_board[i].position[0].x,
+                                                  draw_board[i].position[0].y,
+                                                  draw_board[i].parameter[1],
+                                                  draw_board[i].draw_board_color);
+
+                                        break;
                                 }
                 }
         // choose Color
@@ -191,6 +222,9 @@ draw_draw ()
         // draw mouse
         switch (draw_mode)
                 {
+                case -1:
+                        DrawText ("Normal", 30, 1250, 20, font_color);
+                        break;
                 case 1:
                         // circle mode
                         DrawCircle (GetMousePosition ().x, GetMousePosition ().y, draw_size,
@@ -216,6 +250,11 @@ draw_draw ()
                                         DrawCircle (draw_poly_points[i].x, draw_poly_points[i].y,
                                                     1.0, draw_color);
                                 }
+                        break;
+                case 4:
+                        DrawText ("Text", 30, 1250, 20, font_color);
+                        DrawText (TextFormat ("%c", draw_text), GetMousePosition ().x,
+                                  GetMousePosition ().y, draw_size, draw_color);
                         break;
                 }
         DrawCircle (10, 1260, 10.0, draw_color);
