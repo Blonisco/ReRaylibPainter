@@ -1,5 +1,5 @@
 TARGET = ReRaylibPainter
-SOURCES = ReRaylibPainter.c menu.c draw.c
+SOURCES = ReRaylibPainter.c menu.c draw.c file.c
 
 $(TARGET): $(SOURCES)
 	gcc -o $(TARGET) $(SOURCES) -I include -L lib -lraylib -lgdi32 -lwinmm

@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "screens.h"
+#include <stdio.h>
 
 static Mode next_mode = DRAW;
 int draw_mode         = -1;
@@ -14,11 +15,18 @@ Vector2 draw_poly_points[10];
 int poly_points_number = 0;
 // Text
 char draw_text = 'T';
+static FILE *file_pointer;
+
+void load_file (FILE *fp);
+void save_file (FILE *fp);
+
 void
-init_draw ()
+init_draw (FILE *fp)
 {
         next_mode          = DRAW;
         poly_points_number = 0;
+        file_pointer       = fp;
+        load_file (file_pointer);
 }
 
 Mode
@@ -47,6 +55,11 @@ update_mode_draw ()
                         if (IsKeyDown (KEY_T)) // mode4:Text
                                 {
                                         draw_mode = 4;
+                                }
+
+                        if (IsKeyDown (KEY_W))
+                                {
+                                        save_file (file_pointer);
                                 }
                 }
         else
@@ -120,8 +133,7 @@ update_mode_draw ()
                                 {
                                         if (poly_points_number > 1)
                                                 {
-                                                        for (int i = 0; i <= poly_points_number;
-                                                             i++)
+                                                        for (int i = 0; i < poly_points_number; i++)
                                                                 {
                                                                         draw_board[draw_board_index]
                                                                             .position[i]
@@ -258,4 +270,38 @@ draw_draw ()
                         break;
                 }
         DrawCircle (10, 1260, 10.0, draw_color);
+}
+
+void
+save_file (FILE *fp)
+{
+        if (fp == NULL)
+                return;
+        rewind (fp);
+
+        fwrite (&draw_board_index, sizeof (int), 1, fp);
+
+        fwrite (draw_board, sizeof (struct draw), draw_board_index, fp);
+}
+
+void
+load_file (FILE *fp)
+{
+        if (fp == NULL)
+                return;
+
+        rewind (fp);
+
+        if (fread (&draw_board_index, sizeof (int), 1, fp) != 1)
+                {
+                        draw_board_index = 0;
+                        return;
+                }
+
+        if (draw_board_index > 0)
+                {
+                        fread (draw_board, sizeof (struct draw), draw_board_index, fp);
+                }
+
+        TraceLog (LOG_INFO, "FILE: Loaded %d elements from file.", draw_board_index);
 }

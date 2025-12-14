@@ -1,13 +1,13 @@
 #ifndef SCREENS_H
 #define SCREENS_H
-
 #include "raylib.h"
+#include <stdio.h>
 // define mode
 typedef enum
 {
         MENU,
         DRAW,
-        FILE,
+        FILE_READ,
         EXIT,
 } Mode;
 // draw
@@ -30,10 +30,14 @@ extern int font_size;
 void init_menu ();
 void update_mode_menu ();
 Mode return_mode_menu ();
-void draw_menu ();
+void draw_menu (int);
 
-void init_draw ();
+void init_draw (FILE *);
 Mode return_mode_draw ();
 void update_mode_draw ();
 void draw_draw ();
+
+void init_file ();
+Mode return_mode_file ();
+FILE *update_mode_file (char *);
 #endif
