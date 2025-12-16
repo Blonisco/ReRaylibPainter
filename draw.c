@@ -237,6 +237,7 @@ draw_draw ()
                 case -1:
                         DrawText ("Normal", 30, 1250, 20, font_color);
                         break;
+                        return;
                 case 1:
                         // circle mode
                         DrawCircle (GetMousePosition ().x, GetMousePosition ().y, draw_size,
@@ -276,7 +277,9 @@ void
 save_file (FILE *fp)
 {
         if (fp == NULL)
-                return;
+                {
+                        fp = fopen ("new project", "wb");
+                }
         rewind (fp);
 
         fwrite (&draw_board_index, sizeof (int), 1, fp);
