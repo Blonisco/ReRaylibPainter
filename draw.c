@@ -231,6 +231,14 @@ draw_draw ()
                 {
                         draw_color = GREEN;
                 }
+        if (IsKeyPressed (KEY_SIX))
+                {
+                        draw_color = PURPLE;
+                }
+        if (IsKeyPressed (KEY_SEVEN))
+                {
+                        draw_color = WHITE;
+                }
         // draw mouse
         switch (draw_mode)
                 {
