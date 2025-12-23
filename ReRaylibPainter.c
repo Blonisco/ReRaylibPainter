@@ -4,8 +4,9 @@
 #include <string.h>
 
 // font
-Color font_color = BLACK;
-int font_size    = 40;
+Color font_color    = BLACK;
+int font_size       = 40;
+int is_creating_new = 0;
 // mode init
 static Mode mode_current = MENU;
 
@@ -14,22 +15,20 @@ main (int argc, char **argv)
 {
         InitWindow (1400, 1280, "RaylibPainter");
 
-        char file_name[50];
-        FILE *fp;
-        int file_read = 0;
+        char file_name[1024] = "";
+        FILE *fp             = NULL;
+        int file_read        = 0;
         init_menu ();
         if (argc == 2)
                 {
-                        strcpy (file_name, argv[1]);
+                        strncpy (file_name, argv[1], 1023);
                         mode_current = FILE_READ;
                 }
         else
                 {
-
-                        strcpy (file_name, "draw");
+                        mode_current = MENU;
                 }
 
-        fp = update_mode_file (file_name);
         while (!WindowShouldClose () && mode_current != EXIT)
 
                 {
@@ -42,6 +41,10 @@ main (int argc, char **argv)
                                 case MENU:
                                         update_mode_menu ();
                                         next_mode = return_mode_menu ();
+                                        if (next_mode == FILE_READ)
+                                                {
+                                                        file_name[0] = '\0';
+                                                }
                                         break;
                                 case DRAW:
                                         update_mode_draw ();
@@ -49,7 +52,7 @@ main (int argc, char **argv)
                                         break;
                                 case FILE_READ:
 
-                                        fp = update_mode_file (file_name);
+                                        fp = update_mode_file (file_name, is_creating_new);
                                         if (fp == NULL)
                                                 {
                                                         file_read = 1;
@@ -98,5 +101,6 @@ main (int argc, char **argv)
                                 }
                         EndDrawing ();
                 };
-        fclose (fp);
+        if (fp != NULL)
+                fclose (fp);
 }

@@ -13,11 +13,13 @@ update_mode_menu ()
 {
         if (IsKeyReleased (KEY_A))
                 {
-                        next_mode = DRAW;
+                        is_creating_new = 1;
+                        next_mode       = FILE_READ;
                 }
         else if (IsKeyReleased (KEY_S))
                 {
-                        next_mode = FILE_READ;
+                        is_creating_new = 0;
+                        next_mode       = FILE_READ;
                 }
         else if (IsKeyReleased (KEY_D))
                 {

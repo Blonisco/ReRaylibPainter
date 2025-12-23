@@ -18,6 +18,8 @@ struct draw
         Vector2 position[10];
         Color draw_board_color;
 };
+extern int is_creating_new;
+
 extern int draw_board_index;
 extern struct draw draw_board[10000];
 extern Color draw_color;
@@ -39,5 +41,12 @@ void draw_draw ();
 
 void init_file ();
 Mode return_mode_file ();
-FILE *update_mode_file (char *);
+FILE *update_mode_file (char *, int);
+
+// drawfunc
+void DrawRectanglePoints (int posX_a, int posY_a, int posX_b, int posY_b, Color color);
+
+// win32
+const char *ShowOpenFileDialog ();
+const char *ShowSaveFileDialog ();
 #endif

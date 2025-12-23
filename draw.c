@@ -56,8 +56,12 @@ update_mode_draw ()
                                 {
                                         draw_mode = 4;
                                 }
+                        if (IsKeyDown (KEY_R)) // Rectangle;
+                                {
+                                        draw_mode = 5;
+                                }
 
-                        if (IsKeyDown (KEY_W))
+                        if (IsKeyDown (KEY_W)) // save file;
                                 {
                                         save_file (file_pointer);
                                 }
@@ -170,6 +174,30 @@ update_mode_draw ()
                                         draw_text = draw_text_temp;
                                 }
                 }
+        if (draw_mode == 5)
+                {
+                        if (IsMouseButtonPressed (MOUSE_BUTTON_LEFT))
+                                {
+                                        draw_start_mouse = GetMousePosition ();
+                                }
+
+                        if (IsMouseButtonReleased (MOUSE_BUTTON_LEFT))
+                                {
+                                        if (draw_board_index < 10000)
+                                                {
+                                                        draw_board[draw_board_index].draw_board_type
+                                                            = 'r';
+                                                        draw_board[draw_board_index].position[0]
+                                                            = draw_start_mouse;
+                                                        draw_board[draw_board_index].position[1]
+                                                            = GetMousePosition ();
+                                                        draw_board[draw_board_index]
+                                                            .draw_board_color
+                                                            = draw_color;
+                                                        draw_board_index++;
+                                                }
+                                }
+                }
 }
 
 void
@@ -207,6 +235,13 @@ draw_draw ()
                                                   draw_board[i].parameter[1],
                                                   draw_board[i].draw_board_color);
 
+                                        break;
+                                case 'r':
+                                        DrawRectanglePoints (draw_board[i].position[0].x,
+                                                             draw_board[i].position[0].y,
+                                                             draw_board[i].position[1].x,
+                                                             draw_board[i].position[1].y,
+                                                             draw_board[i].draw_board_color);
                                         break;
                                 }
                 }
@@ -277,7 +312,17 @@ draw_draw ()
                         DrawText (TextFormat ("%c", draw_text), GetMousePosition ().x,
                                   GetMousePosition ().y, draw_size, draw_color);
                         break;
+                case 5:
+                        DrawText ("Rectangle", 30, 1250, 20, font_color);
+                        if (IsMouseButtonDown (MOUSE_BUTTON_LEFT))
+                                {
+                                        DrawRectanglePoints (draw_start_mouse.x, draw_start_mouse.y,
+                                                             GetMousePosition ().x,
+                                                             GetMousePosition ().y, draw_color);
+                                }
+                        break;
                 }
+
         DrawCircle (10, 1260, 10.0, draw_color);
 }
 
