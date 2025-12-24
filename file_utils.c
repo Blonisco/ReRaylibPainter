@@ -23,8 +23,8 @@ ShowOpenFileDialog ()
         ofn.hwndOwner   = NULL;
         ofn.lpstrFile   = global_file_path;
         ofn.nMaxFile    = sizeof (global_file_path);
-        ofn.lpstrFilter = "Raylib Painter Files (*.dat)\0*.dat\0All Files\0*.*\0";
-        ofn.lpstrDefExt = "dat";
+        ofn.lpstrFilter = "Raylib Painter Files (*.rpf)\0*.rpf\0All Files\0*.*\0";
+        ofn.lpstrDefExt = "rpf";
         ofn.Flags       = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
         if (GetOpenFileName (&ofn))
                 return global_file_path;
@@ -71,8 +71,8 @@ ShowSaveFileDialog ()
         ofn.lStructSize = sizeof (ofn);
         ofn.lpstrFile   = global_file_path;
         ofn.nMaxFile    = sizeof (global_file_path);
-        ofn.lpstrFilter = "Raylib Painter Files (*.dat)\0*.dat\0All Files\0*.*\0";
-        ofn.lpstrDefExt = "dat";
+        ofn.lpstrFilter = "Raylib Painter Files (*.rpf)\0*.rpf\0All Files\0*.*\0";
+        ofn.lpstrDefExt = "rpf";
         ofn.Flags       = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
         if (GetSaveFileName (&ofn))
                 return global_file_path;
