@@ -19,7 +19,7 @@ else
 endif
 
 $(TARGET): $(SOURCES)
-	gcc -o $(TARGET) $(SOURCES) $(INCLUDES) $(LDFLAGS)
+	gcc  -o $(TARGET) $(SOURCES) $(INCLUDES) $(LDFLAGS)
 
 clean:
 	rm -f $(TARGET) $(TARGET).exe

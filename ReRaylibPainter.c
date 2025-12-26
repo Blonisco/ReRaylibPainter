@@ -13,6 +13,7 @@ static Mode mode_current = MENU;
 int
 main (int argc, char **argv)
 {
+        SetTargetFPS (60);
         InitWindow (1400, 1280, "RaylibPainter");
 
         char file_name[1024] = "";

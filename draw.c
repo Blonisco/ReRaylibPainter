@@ -38,7 +38,7 @@ return_mode_draw ()
 void
 update_mode_draw ()
 {
-        if (draw_mode == -1)
+        if (draw_mode == -1) // In "normal" mode
                 {
                         if (IsKeyDown (KEY_C))
                                 {
@@ -65,6 +65,14 @@ update_mode_draw ()
                                 {
                                         save_file (file_pointer);
                                 }
+                        if (IsKeyDown (KEY_Q))
+                                {
+                                        next_mode = EXIT;
+                                }
+                        if (IsKeyDown (KEY_M))
+                                {
+                                        next_mode = MENU;
+                                }
                 }
         else
                 {
@@ -73,18 +81,23 @@ update_mode_draw ()
                                         draw_mode = -1;
                                 }
                 }
-        if (IsKeyPressed (KEY_U))
+        if (IsKeyPressed (KEY_U)) // 撤回
                 {
                         if (draw_board_index > 0)
                                 {
                                         draw_board_index--;
                                 }
                 }
-        draw_size += (int)GetMouseWheelMove () * 3;
-        if (draw_size > 100)
-                draw_size = 100;
-        if (draw_size < 1)
-                draw_size = 1;
+        if ((int)GetMouseWheelMove () != 0)
+                {
+                        draw_size += (int)GetMouseWheelMove () * 3; // 滚轮选择大小
+                        if (draw_size > 100)
+                                draw_size = 100;
+                        if (draw_size < 1)
+                                draw_size = 1;
+                }
+
+        // 鼠标绘图
         if (draw_mode == 1)
                 {
                         if (IsMouseButtonPressed (MOUSE_BUTTON_LEFT))
@@ -97,7 +110,7 @@ update_mode_draw ()
                                         draw_board_index++;
                                 }
                 }
-        if (draw_mode == 2)
+        else if (draw_mode == 2)
                 {
                         if (IsMouseButtonPressed (MOUSE_BUTTON_LEFT))
                                 {
@@ -121,7 +134,7 @@ update_mode_draw ()
                                                 }
                                 }
                 }
-        if (draw_mode == 3)
+        else if (draw_mode == 3)
                 {
                         if (IsMouseButtonReleased (MOUSE_BUTTON_LEFT))
                                 {
@@ -155,7 +168,7 @@ update_mode_draw ()
                                                 }
                                 }
                 }
-        if (draw_mode == 4)
+        else if (draw_mode == 4)
                 {
                         if (IsMouseButtonPressed (MOUSE_BUTTON_LEFT))
                                 {
@@ -174,7 +187,7 @@ update_mode_draw ()
                                         draw_text = draw_text_temp;
                                 }
                 }
-        if (draw_mode == 5)
+        else if (draw_mode == 5)
                 {
                         if (IsMouseButtonPressed (MOUSE_BUTTON_LEFT))
                                 {
@@ -197,6 +210,35 @@ update_mode_draw ()
                                                         draw_board_index++;
                                                 }
                                 }
+                }
+        // choose Color
+        if (IsKeyPressed (KEY_ONE))
+                {
+                        draw_color = BLACK;
+                }
+        else if (IsKeyPressed (KEY_TWO))
+                {
+                        draw_color = BLUE;
+                }
+        else if (IsKeyPressed (KEY_THREE))
+                {
+                        draw_color = RED;
+                }
+        else if (IsKeyPressed (KEY_FOUR))
+                {
+                        draw_color = YELLOW;
+                }
+        else if (IsKeyPressed (KEY_FIVE))
+                {
+                        draw_color = GREEN;
+                }
+        else if (IsKeyPressed (KEY_SIX))
+                {
+                        draw_color = PURPLE;
+                }
+        else if (IsKeyPressed (KEY_SEVEN))
+                {
+                        draw_color = WHITE;
                 }
 }
 
@@ -245,35 +287,7 @@ draw_draw ()
                                         break;
                                 }
                 }
-        // choose Color
-        if (IsKeyPressed (KEY_ONE))
-                {
-                        draw_color = BLACK;
-                }
-        if (IsKeyPressed (KEY_TWO))
-                {
-                        draw_color = BLUE;
-                }
-        if (IsKeyPressed (KEY_THREE))
-                {
-                        draw_color = RED;
-                }
-        if (IsKeyPressed (KEY_FOUR))
-                {
-                        draw_color = YELLOW;
-                }
-        if (IsKeyPressed (KEY_FIVE))
-                {
-                        draw_color = GREEN;
-                }
-        if (IsKeyPressed (KEY_SIX))
-                {
-                        draw_color = PURPLE;
-                }
-        if (IsKeyPressed (KEY_SEVEN))
-                {
-                        draw_color = WHITE;
-                }
+
         // draw mouse
         switch (draw_mode)
                 {
@@ -282,13 +296,11 @@ draw_draw ()
                         break;
                         return;
                 case 1:
-                        // circle mode
                         DrawCircle (GetMousePosition ().x, GetMousePosition ().y, draw_size,
                                     draw_color);
                         DrawText ("Circle", 30, 1250, 20, font_color);
 
                         break;
-                // line mode
                 case 2:
                         DrawText ("Line", 30, 1250, 20, font_color);
                         if (IsMouseButtonDown (MOUSE_BUTTON_LEFT))
@@ -329,9 +341,9 @@ draw_draw ()
 void
 save_file (FILE *fp)
 {
-        if (fp == NULL)
+        if (fp == NULL) // 一般不会遇见此场景
                 {
-                        fp = fopen ("new project", "wb");
+                        fp = fopen ("new project.rpf", "wb");
                 }
         rewind (fp);
 
