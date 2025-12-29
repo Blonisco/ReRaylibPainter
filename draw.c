@@ -73,19 +73,19 @@ update_mode_draw ()
                                 {
                                         next_mode = MENU;
                                 }
+                        if (IsKeyPressed (KEY_U)) // 撤回
+                                {
+                                        if (draw_board_index > 0)
+                                                {
+                                                        draw_board_index--;
+                                                }
+                                }
                 }
         else
                 {
                         if (IsKeyDown (KEY_TAB))
                                 {
                                         draw_mode = -1;
-                                }
-                }
-        if (IsKeyPressed (KEY_U)) // 撤回
-                {
-                        if (draw_board_index > 0)
-                                {
-                                        draw_board_index--;
                                 }
                 }
         if ((int)GetMouseWheelMove () != 0)
